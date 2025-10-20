@@ -1,12 +1,18 @@
 package com.dkd.web.controller.common;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import cn.xuyanwu.spring.file.storage.FileInfo;
+import cn.xuyanwu.spring.file.storage.FileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +40,8 @@ public class CommonController
 
     @Autowired
     private ServerConfig serverConfig;
+    @Autowired
+    private FileStorageService fileStorageService;//注入实列
 
     private static final String FILE_DELIMETER = ",";
 
@@ -50,7 +58,7 @@ public class CommonController
         {
             if (!FileUtils.checkAllowDownload(fileName))
             {
-                throw new Exception(StringUtils.format("文件名称({})非法，不允许下载。 ", fileName));
+                throw new Exception(StringUtils.format("文件名称({})非法，不允许下载。", fileName));
             }
             String realFileName = System.currentTimeMillis() + fileName.substring(fileName.indexOf("_") + 1);
             String filePath = RuoYiConfig.getDownloadPath() + fileName;
@@ -77,15 +85,22 @@ public class CommonController
     {
         try
         {
-            // 上传文件路径
+            /*// 上传文件路径
             String filePath = RuoYiConfig.getUploadPath();
             // 上传并返回新文件名称
             String fileName = FileUploadUtils.upload(filePath, file);
-            String url = serverConfig.getUrl() + fileName;
+            String url = serverConfig.getUrl() + fileName;*/
+
+            //指定文件保存在oss中的路径 dkd-images/2025/10/20/
+            String objectName = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "/";
+            FileInfo fileInfo = fileStorageService.of(file)
+                    .setPath(objectName) //保存到相对路径下，为了方便管理，不需要可以不写
+                    .upload();
+
             AjaxResult ajax = AjaxResult.success();
-            ajax.put("url", url);
-            ajax.put("fileName", fileName);
-            ajax.put("newFileName", FileUtils.getName(fileName));
+            ajax.put("url", fileInfo.getUrl());
+            ajax.put("fileName", fileInfo.getUrl());
+            ajax.put("newFileName", FileUtils.getName(fileInfo.getUrl()));
             ajax.put("originalFilename", file.getOriginalFilename());
             return ajax;
         }

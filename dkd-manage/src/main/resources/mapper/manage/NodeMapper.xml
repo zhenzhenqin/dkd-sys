@@ -30,6 +30,7 @@
         <result property="createBy" column="create_by"/>
         <result property="updateBy" column="update_by"/>
         <result property="remark" column="remark"/>
+        <result property="vmCount" column="vm_count"/>
         <association property="region" javaType="Region" column="region_id" select="com.dkd.manage.mapper.RegionMapper.selectRegionById"/>
         <association property="partner" javaType="Partner" column="partner_id" select="com.dkd.manage.mapper.PartnerMapper.selectPartnerById"/>
     </resultMap>
@@ -65,38 +66,43 @@
 
     <!--手动封装点位信息-->
     <select id="selectNodeVoList" resultMap="NodeVoResult">
-        SELECT n.id,
-        n.node_name,
-        n.address,
-        n.business_type,
-        n.region_id,
-        n.partner_id,
-        n.create_time,
-        n.update_time,
-        n.create_by,
-        n.update_by,
-        n.remark,
-        COUNT(vm.id) AS device_count
-        FROM tb_node n
-        LEFT JOIN tb_vending_machine vm ON n.id = vm.node_id
-        GROUP BY n.id,
-        n.node_name,
-        n.address,
-        n.business_type,
-        n.region_id,
-        n.partner_id,
-        n.create_time,
-        n.update_time,
-        n.create_by,
-        n.update_by,
-        n.remark
+        <![CDATA[
+    SELECT n.id,
+    n.node_name,
+    n.address,
+    n.business_type,
+    n.region_id,
+    n.partner_id,
+    n.create_time,
+    n.update_time,
+    n.create_by,
+    n.update_by,
+    n.remark,
+    COUNT(vm.id) AS vm_count
+    FROM tb_node n
+    LEFT JOIN tb_vending_machine vm ON n.id = vm.node_id
+    ]]>
         <where>
             <if test="nodeName != null  and nodeName != ''">and n.node_name like concat('%', #{nodeName}, '%')</if>
             <if test="regionId != null ">and n.region_id = #{regionId}</if>
             <if test="partnerId != null ">and n.partner_id = #{partnerId}</if>
         </where>
-        ORDER BY n.id
+        <![CDATA[
+    GROUP BY n.id,
+    n.node_name,
+    n.address,
+    n.business_type,
+    n.region_id,
+    n.partner_id,
+    n.create_time,
+    n.update_time,
+    n.create_by,
+    n.update_by,
+    n.remark
+    ORDER BY n.id
+    ]]>
     </select>
+
 
     <insert id="insertNode" parameterType="Node" useGeneratedKeys="true" keyProperty="id">
         insert into tb_node
