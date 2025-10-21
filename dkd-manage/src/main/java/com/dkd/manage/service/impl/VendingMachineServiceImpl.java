@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.dkd.manage.mapper.VendingMachineMapper;
 import com.dkd.manage.domain.VendingMachine;
 import com.dkd.manage.service.IVendingMachineService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 设备管理Service业务层处理
@@ -67,6 +68,7 @@ public class VendingMachineServiceImpl implements IVendingMachineService
      * @param vendingMachine 设备管理
      * @return 结果
      */
+    @Transactional
     @Override
     public int insertVendingMachine(VendingMachine vendingMachine)
     {
@@ -127,6 +129,12 @@ public class VendingMachineServiceImpl implements IVendingMachineService
     @Override
     public int updateVendingMachine(VendingMachine vendingMachine)
     {
+        //传入对的不仅需要更新点位 同时还需要更新冗余字段 包括区域的地址，区域id，合作商id以及商圈类型
+            //先根据点位id获取点位
+        Node node = nodeMapper.selectNodeById(vendingMachine.getNodeId());
+            //属性拷贝 设置详细地址，商圈类型，区域id，合作商id 但是需要将node中的id属性排除
+        BeanUtils.copyProperties(node, vendingMachine, "id");
+        vendingMachine.setAddr(node.getAddress());
         vendingMachine.setUpdateTime(DateUtils.getNowDate());
         return vendingMachineMapper.updateVendingMachine(vendingMachine);
     }
