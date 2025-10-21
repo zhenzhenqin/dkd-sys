@@ -1,7 +1,18 @@
 package com.dkd.manage.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.dkd.common.constant.DkdContants;
 import com.dkd.common.utils.DateUtils;
+import com.dkd.common.utils.uuid.UUIDUtils;
+import com.dkd.manage.domain.Channel;
+import com.dkd.manage.domain.Node;
+import com.dkd.manage.domain.VmType;
+import com.dkd.manage.mapper.ChannelMapper;
+import com.dkd.manage.mapper.NodeMapper;
+import com.dkd.manage.mapper.VmTypeMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.dkd.manage.mapper.VendingMachineMapper;
@@ -19,6 +30,12 @@ public class VendingMachineServiceImpl implements IVendingMachineService
 {
     @Autowired
     private VendingMachineMapper vendingMachineMapper;
+    @Autowired
+    private VmTypeMapper vmTypeMapper;
+    @Autowired
+    private NodeMapper nodeMapper;
+    @Autowired
+    private ChannelMapper channelMapper;
 
     /**
      * 查询设备管理
@@ -53,8 +70,52 @@ public class VendingMachineServiceImpl implements IVendingMachineService
     @Override
     public int insertVendingMachine(VendingMachine vendingMachine)
     {
+        //1.新增设备
+        //1.1 系统随机生成内部编号
+        String innerCode = UUIDUtils.getUUID();
+        vendingMachine.setInnerCode(innerCode);
+
+        //1.2 设置最大容量 从设备类型中获取
+         //根据设备类型id 获取到对应的设备类型
+        VmType vmType = vmTypeMapper.selectVmTypeById(vendingMachine.getVmTypeId());
+        vendingMachine.setChannelMaxCapacity(vmType.getChannelMaxCapacity()); //获取最大容量
+
+        //1.3 设置详细地址 通过前端传入的点位id获取到具体的点位
+        Node node = nodeMapper.selectNodeById(vendingMachine.getNodeId());
+         //属性拷贝 设置详细地址，商圈类型，区域id，合作商id 但是需要将node中的id属性排除
+        BeanUtils.copyProperties(node, vendingMachine, "id");
+        vendingMachine.setAddr(node.getAddress());
+
+        //1.4 设置设备状态 刚开始设置为未投放
+        vendingMachine.setVmStatus(DkdContants.VM_STATUS_NODEPLOY);
+
+        //设置创建时间
         vendingMachine.setCreateTime(DateUtils.getNowDate());
-        return vendingMachineMapper.insertVendingMachine(vendingMachine);
+        vendingMachine.setUpdateTime(DateUtils.getNowDate());
+        int result = vendingMachineMapper.insertVendingMachine(vendingMachine);
+
+        //新增货道
+        List<Channel> channelList = new ArrayList<>();
+        for (int i = 0; i < vmType.getVmCol(); i++) { //遍历行
+            for (int j = 0; j < vmType.getVmRow(); j++){ //遍历列   货道总数量 = 行数 * 列数
+                Channel channel = new Channel();
+                channel.setChannelCode(i + "-" + j); //设置货道编号 i-j
+                channel.setVmId(vendingMachine.getId()); //设置售货机id
+                channel.setInnerCode(vendingMachine.getInnerCode()); //设置售货机软编号
+                channel.setMaxCapacity(vmType.getChannelMaxCapacity()); //设置货道最大容量
+
+                //设置时间
+                channel.setCreateTime(DateUtils.getNowDate());
+                channel.setUpdateTime(DateUtils.getNowDate());
+
+                channelList.add(channel);
+            }
+        }
+
+        //批量插入货道
+        channelMapper.insertBatchChannel(channelList);
+
+        return result; //返回影响的行数
     }
 
     /**

@@ -58,4 +58,11 @@ public interface ChannelMapper
      * @return 结果
      */
     public int deleteChannelByIds(Long[] ids);
+
+    /**
+     * 批量新增售货机货道
+     *
+     * @param channelList
+     */
+    public void insertBatchChannel(List<Channel> channelList);
 }
