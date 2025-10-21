@@ -6,13 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import cn.xuyanwu.spring.file.storage.FileInfo;
 import cn.xuyanwu.spring.file.storage.FileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -99,7 +97,7 @@ public class CommonController
 
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", fileInfo.getUrl());
-            ajax.put("fileName", fileInfo.getUrl());
+            ajax.put("fileName", fileInfo.getUrl()); //此处需要改为url因为前端访问的时候会对地址进行一个判断是否包含http请求，如果包含则直接访问，不包含则通过本地地址进行访问
             ajax.put("newFileName", FileUtils.getName(fileInfo.getUrl()));
             ajax.put("originalFilename", file.getOriginalFilename());
             return ajax;

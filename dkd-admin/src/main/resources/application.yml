@@ -93,12 +93,12 @@ spring:
     aliyun-oss: # 阿里云 OSS ，不使用的情况下可以不写
       - platform: aliyun-oss-1 # 存储平台标识
         enable-storage: true  # 启用存储
-        access-key: ??
-        secret-key: ??
-        end-point: https://oss-cn-hangzhou.aliyuncs.com
+        access-key: ${ALIBABA_CLOUD_ACCESS_KEY}
+        secret-key: ${ALIBABA_CLOUD_ACCESS_SECRET}
+        end-point: oss-cn-hangzhou.aliyuncs.com
         bucket-name: java-management-016
         domain: https://java-management-016.oss-cn-hangzhou.aliyuncs.com/ # 访问域名，注意“/”结尾，例如：https://abc.oss-cn-shanghai.aliyuncs.com/
-        base-path: dkd-images/ # 基础路径
+        base-path: dkd-images/ # 基础路径        （文件夹名称）
 
 
 # token配置
