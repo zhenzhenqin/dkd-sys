@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dkd.manage.mapper.SkuClassMapper">
+    
+    <resultMap type="SkuClass" id="SkuClassResult">
+        <result property="classId"    column="class_id"    />
+        <result property="className"    column="class_name"    />
+        <result property="parentId"    column="parent_id"    />
+    </resultMap>
+
+    <sql id="selectSkuClassVo">
+        select class_id, class_name, parent_id from tb_sku_class
+    </sql>
+
+    <select id="selectSkuClassList" parameterType="SkuClass" resultMap="SkuClassResult">
+        <include refid="selectSkuClassVo"/>
+        <where>  
+            <if test="className != null  and className != ''"> and class_name like concat('%', #{className}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectSkuClassByClassId" parameterType="Long" resultMap="SkuClassResult">
+        <include refid="selectSkuClassVo"/>
+        where class_id = #{classId}
+    </select>
+        
+    <insert id="insertSkuClass" parameterType="SkuClass" useGeneratedKeys="true" keyProperty="classId">
+        insert into tb_sku_class
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="className != null">class_name,</if>
+            <if test="parentId != null">parent_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="className != null">#{className},</if>
+            <if test="parentId != null">#{parentId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSkuClass" parameterType="SkuClass">
+        update tb_sku_class
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="className != null">class_name = #{className},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+        </trim>
+        where class_id = #{classId}
+    </update>
+
+    <delete id="deleteSkuClassByClassId" parameterType="Long">
+        delete from tb_sku_class where class_id = #{classId}
+    </delete>
+
+    <delete id="deleteSkuClassByClassIds" parameterType="String">
+        delete from tb_sku_class where class_id in 
+        <foreach item="classId" collection="array" open="(" separator="," close=")">
+            #{classId}
+        </foreach>
+    </delete>
+</mapper>

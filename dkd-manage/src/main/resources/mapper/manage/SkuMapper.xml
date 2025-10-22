@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dkd.manage.mapper.SkuMapper">
+    
+    <resultMap type="Sku" id="SkuResult">
+        <result property="skuId"    column="sku_id"    />
+        <result property="skuName"    column="sku_name"    />
+        <result property="skuImage"    column="sku_image"    />
+        <result property="brandName"    column="brand_Name"    />
+        <result property="unit"    column="unit"    />
+        <result property="price"    column="price"    />
+        <result property="classId"    column="class_id"    />
+        <result property="isDiscount"    column="is_discount"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSkuVo">
+        select sku_id, sku_name, sku_image, brand_Name, unit, price, class_id, is_discount, create_time, update_time from tb_sku
+    </sql>
+
+    <select id="selectSkuList" parameterType="Sku" resultMap="SkuResult">
+        <include refid="selectSkuVo"/>
+        <where>  
+            <if test="skuName != null  and skuName != ''"> and sku_name like concat('%', #{skuName}, '%')</if>
+            <if test="classId != null "> and class_id = #{classId}</if>
+        </where>
+    </select>
+    
+    <select id="selectSkuBySkuId" parameterType="Long" resultMap="SkuResult">
+        <include refid="selectSkuVo"/>
+        where sku_id = #{skuId}
+    </select>
+        
+    <insert id="insertSku" parameterType="Sku" useGeneratedKeys="true" keyProperty="skuId">
+        insert into tb_sku
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="skuName != null and skuName != ''">sku_name,</if>
+            <if test="skuImage != null and skuImage != ''">sku_image,</if>
+            <if test="brandName != null and brandName != ''">brand_Name,</if>
+            <if test="unit != null and unit != ''">unit,</if>
+            <if test="price != null">price,</if>
+            <if test="classId != null">class_id,</if>
+            <if test="isDiscount != null">is_discount,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="skuName != null and skuName != ''">#{skuName},</if>
+            <if test="skuImage != null and skuImage != ''">#{skuImage},</if>
+            <if test="brandName != null and brandName != ''">#{brandName},</if>
+            <if test="unit != null and unit != ''">#{unit},</if>
+            <if test="price != null">#{price},</if>
+            <if test="classId != null">#{classId},</if>
+            <if test="isDiscount != null">#{isDiscount},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSku" parameterType="Sku">
+        update tb_sku
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="skuName != null and skuName != ''">sku_name = #{skuName},</if>
+            <if test="skuImage != null and skuImage != ''">sku_image = #{skuImage},</if>
+            <if test="brandName != null and brandName != ''">brand_Name = #{brandName},</if>
+            <if test="unit != null and unit != ''">unit = #{unit},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="classId != null">class_id = #{classId},</if>
+            <if test="isDiscount != null">is_discount = #{isDiscount},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where sku_id = #{skuId}
+    </update>
+
+    <delete id="deleteSkuBySkuId" parameterType="Long">
+        delete from tb_sku where sku_id = #{skuId}
+    </delete>
+
+    <delete id="deleteSkuBySkuIds" parameterType="String">
+        delete from tb_sku where sku_id in 
+        <foreach item="skuId" collection="array" open="(" separator="," close=")">
+            #{skuId}
+        </foreach>
+    </delete>
+</mapper>
