@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dkd.manage.mapper.PolicyMapper">
+    
+    <resultMap type="Policy" id="PolicyResult">
+        <result property="policyId"    column="policy_id"    />
+        <result property="policyName"    column="policy_name"    />
+        <result property="discount"    column="discount"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectPolicyVo">
+        select policy_id, policy_name, discount, create_time, update_time from tb_policy
+    </sql>
+
+    <select id="selectPolicyList" parameterType="Policy" resultMap="PolicyResult">
+        <include refid="selectPolicyVo"/>
+        <where>  
+            <if test="policyName != null  and policyName != ''"> and policy_name like concat('%', #{policyName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectPolicyByPolicyId" parameterType="Long" resultMap="PolicyResult">
+        <include refid="selectPolicyVo"/>
+        where policy_id = #{policyId}
+    </select>
+        
+    <insert id="insertPolicy" parameterType="Policy" useGeneratedKeys="true" keyProperty="policyId">
+        insert into tb_policy
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="policyName != null and policyName != ''">policy_name,</if>
+            <if test="discount != null">discount,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="policyName != null and policyName != ''">#{policyName},</if>
+            <if test="discount != null">#{discount},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePolicy" parameterType="Policy">
+        update tb_policy
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="policyName != null and policyName != ''">policy_name = #{policyName},</if>
+            <if test="discount != null">discount = #{discount},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where policy_id = #{policyId}
+    </update>
+
+    <delete id="deletePolicyByPolicyId" parameterType="Long">
+        delete from tb_policy where policy_id = #{policyId}
+    </delete>
+
+    <delete id="deletePolicyByPolicyIds" parameterType="String">
+        delete from tb_policy where policy_id in 
+        <foreach item="policyId" collection="array" open="(" separator="," close=")">
+            #{policyId}
+        </foreach>
+    </delete>
+</mapper>
