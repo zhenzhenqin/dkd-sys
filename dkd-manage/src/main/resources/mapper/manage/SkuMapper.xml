@@ -80,8 +80,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         delete from tb_sku where sku_id = #{skuId}
     </delete>
 
-    <delete id="deleteSkuBySkuIds" parameterType="String">
-        delete from tb_sku where sku_id in 
+    <delete id="deleteSkuBySkuIds">
+        delete from tb_sku where sku_id in
         <foreach item="skuId" collection="array" open="(" separator="," close=")">
             #{skuId}
         </foreach>

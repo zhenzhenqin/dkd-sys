@@ -2,6 +2,7 @@ package com.dkd.manage.mapper;
 
 import java.util.List;
 import com.dkd.manage.domain.Sku;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 商品管理Mapper接口
@@ -57,5 +58,5 @@ public interface SkuMapper
      * @param skuIds 需要删除的数据主键集合
      * @return 结果
      */
-    public int deleteSkuBySkuIds(Long[] skuIds);
+    public int deleteSkuBySkuIds(@Param("skuIds")Long[] skuIds);
 }
