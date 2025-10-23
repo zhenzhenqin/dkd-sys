@@ -60,6 +60,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
+    <!--批量插入商品数据-->
+    <insert id="insertSkuBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="skuId">
+        insert into tb_sku
+        (sku_name, sku_image, brand_Name, unit, price, class_id)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.skuName},
+            #{item.skuImage},
+            #{item.brandName},
+            #{item.unit},
+            #{item.price},
+            #{item.classId}
+            )
+        </foreach>
+    </insert>
+
     <update id="updateSku" parameterType="Sku">
         update tb_sku
         <trim prefix="SET" suffixOverrides=",">
@@ -80,9 +97,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         delete from tb_sku where sku_id = #{skuId}
     </delete>
 
-    <delete id="deleteSkuBySkuIds">
+    <delete id="deleteSkuBySkuIds" parameterType="java.util.List">
         delete from tb_sku where sku_id in
-        <foreach item="skuId" collection="array" open="(" separator="," close=")">
+        <foreach item="skuId" collection="skuIds" open="(" separator="," close=")">
             #{skuId}
         </foreach>
     </delete>

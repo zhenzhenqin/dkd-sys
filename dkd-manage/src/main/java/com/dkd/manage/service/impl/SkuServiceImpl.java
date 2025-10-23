@@ -106,4 +106,21 @@ public class SkuServiceImpl implements ISkuService
     {
         return skuMapper.deleteSkuBySkuId(skuId);
     }
+
+    /**
+     * 批量插入商品数据
+     *
+     * @param skuList 商品数据
+     * @return 结果
+     */
+    @Override
+    public int insertSkuBatch(List<Sku> skuList) {
+        //1.判断商品数据是否为空
+        if(skuList == null || skuList.isEmpty()){
+            throw new ServiceException("商品数据不能为空");
+        }
+
+        //2.批量插入商品数据
+        return skuMapper.insertSkuBatch(skuList);
+    }
 }

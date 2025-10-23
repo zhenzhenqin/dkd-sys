@@ -1,5 +1,6 @@
 package com.dkd.manage.controller;
 
+import java.io.IOException;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,7 @@ import com.dkd.manage.domain.Sku;
 import com.dkd.manage.service.ISkuService;
 import com.dkd.common.utils.poi.ExcelUtil;
 import com.dkd.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 商品管理Controller
@@ -56,7 +58,22 @@ public class SkuController extends BaseController
     {
         List<Sku> list = skuService.selectSkuList(sku);
         ExcelUtil<Sku> util = new ExcelUtil<Sku>(Sku.class);
-        util.exportExcel(response, list, "商品管理数据");
+        util.exportEasyExcel(response, list, "商品管理数据");
+    }
+
+    /**
+     * 导入商品管理数据
+     * @param file
+     */
+    @PreAuthorize("@ss.hasPermi('manage:sku:add')")
+    @Log(title = "商品管理", businessType = BusinessType.IMPORT)
+    @PostMapping("/import")
+    public AjaxResult excelImport(MultipartFile file) throws Exception {
+        ExcelUtil<Sku> util = new ExcelUtil<Sku>(Sku.class);
+        List<Sku> skuList = util.importEasyExcel(file.getInputStream());
+        //将数据批量插入到数据库中
+        int result = skuService.insertSkuBatch(skuList);
+        return toAjax(result);
     }
 
     /**
