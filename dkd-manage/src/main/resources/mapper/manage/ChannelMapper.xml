@@ -17,6 +17,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
+    <!--手动封装ChannelVo-->
+    <resultMap type="ChannelVo" id="ChannelVoResult">
+        <result property="id"    column="id"    />
+        <result property="channelCode"    column="channel_code"    />
+        <result property="skuId"    column="sku_id"    />
+        <result property="vmId"    column="vm_id"    />
+        <result property="innerCode"    column="inner_code"    />
+        <result property="maxCapacity"    column="max_capacity"    />
+        <result property="currentCapacity"    column="current_capacity"    />
+        <result property="lastSupplyTime"    column="last_supply_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <association property="sku" javaType="Sku" column="sku_id" select="com.dkd.manage.mapper.SkuMapper.selectSkuBySkuId"/>
+    </resultMap>
+
     <sql id="selectChannelVo">
         select id, channel_code, sku_id, vm_id, inner_code, max_capacity, current_capacity, last_supply_time, create_time, update_time from tb_channel
     </sql>
@@ -44,6 +59,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <foreach collection="array" item="skuId" open="(" close=")" separator=",">
             #{skuId}
         </foreach>
+    </select>
+
+    <!--手动封装ChannelVo-->
+    <select id="selectChannelVoByInnerCode" resultMap="ChannelVoResult">
+        <include refid="selectChannelVo"/>
+        where inner_code = #{innerCode}
     </select>
 
     <insert id="insertChannel" parameterType="Channel" useGeneratedKeys="true" keyProperty="id">
