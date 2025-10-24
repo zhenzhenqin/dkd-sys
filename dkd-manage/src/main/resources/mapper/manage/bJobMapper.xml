@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dkd.manage.mapper.bJobMapper">
+    
+    <resultMap type="bJob" id="bJobResult">
+        <result property="id"    column="id"    />
+        <result property="alertValue"    column="alert_value"    />
+    </resultMap>
+
+    <sql id="selectbJobVo">
+        select id, alert_value from tb_job
+    </sql>
+
+    <select id="selectbJobList" parameterType="bJob" resultMap="bJobResult">
+        <include refid="selectbJobVo"/>
+        <where>  
+            <if test="alertValue != null "> and alert_value = #{alertValue}</if>
+        </where>
+    </select>
+    
+    <select id="selectbJobById" parameterType="Long" resultMap="bJobResult">
+        <include refid="selectbJobVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertbJob" parameterType="bJob" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_job
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="alertValue != null">alert_value,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="alertValue != null">#{alertValue},</if>
+         </trim>
+    </insert>
+
+    <update id="updatebJob" parameterType="bJob">
+        update tb_job
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="alertValue != null">alert_value = #{alertValue},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletebJobById" parameterType="Long">
+        delete from tb_job where id = #{id}
+    </delete>
+
+    <delete id="deletebJobByIds" parameterType="String">
+        delete from tb_job where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

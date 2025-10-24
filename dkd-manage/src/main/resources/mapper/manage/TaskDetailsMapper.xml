@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dkd.manage.mapper.TaskDetailsMapper">
+    
+    <resultMap type="TaskDetails" id="TaskDetailsResult">
+        <result property="detailsId"    column="details_id"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="channelCode"    column="channel_code"    />
+        <result property="expectCapacity"    column="expect_capacity"    />
+        <result property="skuId"    column="sku_id"    />
+        <result property="skuName"    column="sku_name"    />
+        <result property="skuImage"    column="sku_image"    />
+    </resultMap>
+
+    <sql id="selectTaskDetailsVo">
+        select details_id, task_id, channel_code, expect_capacity, sku_id, sku_name, sku_image from tb_task_details
+    </sql>
+
+    <select id="selectTaskDetailsList" parameterType="TaskDetails" resultMap="TaskDetailsResult">
+        <include refid="selectTaskDetailsVo"/>
+        <where>  
+            <if test="taskId != null "> and task_id = #{taskId}</if>
+            <if test="channelCode != null  and channelCode != ''"> and channel_code = #{channelCode}</if>
+            <if test="expectCapacity != null "> and expect_capacity = #{expectCapacity}</if>
+            <if test="skuId != null "> and sku_id = #{skuId}</if>
+            <if test="skuName != null  and skuName != ''"> and sku_name like concat('%', #{skuName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectTaskDetailsByDetailsId" parameterType="Long" resultMap="TaskDetailsResult">
+        <include refid="selectTaskDetailsVo"/>
+        where details_id = #{detailsId}
+    </select>
+        
+    <insert id="insertTaskDetails" parameterType="TaskDetails" useGeneratedKeys="true" keyProperty="detailsId">
+        insert into tb_task_details
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">task_id,</if>
+            <if test="channelCode != null">channel_code,</if>
+            <if test="expectCapacity != null">expect_capacity,</if>
+            <if test="skuId != null">sku_id,</if>
+            <if test="skuName != null">sku_name,</if>
+            <if test="skuImage != null">sku_image,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">#{taskId},</if>
+            <if test="channelCode != null">#{channelCode},</if>
+            <if test="expectCapacity != null">#{expectCapacity},</if>
+            <if test="skuId != null">#{skuId},</if>
+            <if test="skuName != null">#{skuName},</if>
+            <if test="skuImage != null">#{skuImage},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTaskDetails" parameterType="TaskDetails">
+        update tb_task_details
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null">task_id = #{taskId},</if>
+            <if test="channelCode != null">channel_code = #{channelCode},</if>
+            <if test="expectCapacity != null">expect_capacity = #{expectCapacity},</if>
+            <if test="skuId != null">sku_id = #{skuId},</if>
+            <if test="skuName != null">sku_name = #{skuName},</if>
+            <if test="skuImage != null">sku_image = #{skuImage},</if>
+        </trim>
+        where details_id = #{detailsId}
+    </update>
+
+    <delete id="deleteTaskDetailsByDetailsId" parameterType="Long">
+        delete from tb_task_details where details_id = #{detailsId}
+    </delete>
+
+    <delete id="deleteTaskDetailsByDetailsIds" parameterType="String">
+        delete from tb_task_details where details_id in 
+        <foreach item="detailsId" collection="array" open="(" separator="," close=")">
+            #{detailsId}
+        </foreach>
+    </delete>
+</mapper>

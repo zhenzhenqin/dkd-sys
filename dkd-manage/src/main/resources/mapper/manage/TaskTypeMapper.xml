@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dkd.manage.mapper.TaskTypeMapper">
+    
+    <resultMap type="TaskType" id="TaskTypeResult">
+        <result property="typeId"    column="type_id"    />
+        <result property="typeName"    column="type_name"    />
+        <result property="type"    column="type"    />
+    </resultMap>
+
+    <sql id="selectTaskTypeVo">
+        select type_id, type_name, type from tb_task_type
+    </sql>
+
+    <select id="selectTaskTypeList" parameterType="TaskType" resultMap="TaskTypeResult">
+        <include refid="selectTaskTypeVo"/>
+        <where>  
+            <if test="typeName != null  and typeName != ''"> and type_name like concat('%', #{typeName}, '%')</if>
+            <if test="type != null "> and type = #{type}</if>
+        </where>
+    </select>
+    
+    <select id="selectTaskTypeByTypeId" parameterType="Long" resultMap="TaskTypeResult">
+        <include refid="selectTaskTypeVo"/>
+        where type_id = #{typeId}
+    </select>
+        
+    <insert id="insertTaskType" parameterType="TaskType">
+        insert into tb_task_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="typeId != null">type_id,</if>
+            <if test="typeName != null">type_name,</if>
+            <if test="type != null">type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="typeId != null">#{typeId},</if>
+            <if test="typeName != null">#{typeName},</if>
+            <if test="type != null">#{type},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTaskType" parameterType="TaskType">
+        update tb_task_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="typeName != null">type_name = #{typeName},</if>
+            <if test="type != null">type = #{type},</if>
+        </trim>
+        where type_id = #{typeId}
+    </update>
+
+    <delete id="deleteTaskTypeByTypeId" parameterType="Long">
+        delete from tb_task_type where type_id = #{typeId}
+    </delete>
+
+    <delete id="deleteTaskTypeByTypeIds" parameterType="String">
+        delete from tb_task_type where type_id in 
+        <foreach item="typeId" collection="array" open="(" separator="," close=")">
+            #{typeId}
+        </foreach>
+    </delete>
+</mapper>
