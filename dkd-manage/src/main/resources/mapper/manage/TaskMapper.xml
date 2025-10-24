@@ -21,6 +21,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
+    <!--手动封装vo-->
+    <resultMap type="TaskVo" id="TaskVoResult">
+        <result property="taskId"    column="task_id"    />
+        <result property="taskCode"    column="task_code"    />
+        <result property="taskStatus"    column="task_status"    />
+        <result property="createType"    column="create_type"    />
+        <result property="innerCode"    column="inner_code"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="regionId"    column="region_id"    />
+        <result property="desc"    column="desc"    />
+        <result property="productTypeId"    column="product_type_id"    />
+        <result property="assignorId"    column="assignor_id"    />
+        <result property="addr"    column="addr"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <association property="taskType" javaType="TaskType" column="product_type_id" select="com.dkd.manage.mapper.TaskTypeMapper.selectTaskTypeByTypeId"/>
+    </resultMap>
+
     <sql id="selectTaskVo">
         select task_id, task_code, task_status, create_type, inner_code, user_id, user_name, region_id, `desc`, product_type_id, assignor_id, addr, create_time, update_time from tb_task
     </sql>
@@ -45,6 +64,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectTaskByTaskId" parameterType="Long" resultMap="TaskResult">
         <include refid="selectTaskVo"/>
         where task_id = #{taskId}
+    </select>
+
+    <!--手动封装vo-->
+    <select id="selectTaskVoList" resultMap="TaskVoResult">
+        <include refid="selectTaskVo"/>
+        <where>
+            <if test="taskCode != null  and taskCode != ''"> and task_code = #{taskCode}</if>
+            <if test="taskStatus != null "> and task_status = #{taskStatus}</if>
+            <if test="createType != null "> and create_type = #{createType}</if>
+            <if test="innerCode != null  and innerCode != ''"> and inner_code = #{innerCode}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+            <if test="regionId != null "> and region_id = #{regionId}</if>
+            <if test="desc != null  and desc != ''"> and `desc` = #{desc}</if>
+            <if test="productTypeId != null "> and product_type_id = #{productTypeId}</if>
+            <if test="assignorId != null "> and assignor_id = #{assignorId}</if>
+            <if test="addr != null  and addr != ''"> and addr = #{addr}</if>
+        </where>
     </select>
 
     <insert id="insertTask" parameterType="Task" useGeneratedKeys="true" keyProperty="taskId">

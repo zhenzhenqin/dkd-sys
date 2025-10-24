@@ -2,6 +2,8 @@ package com.dkd.manage.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.dkd.manage.domain.vo.TaskVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,8 +44,8 @@ public class TaskController extends BaseController
     public TableDataInfo list(Task task)
     {
         startPage();
-        List<Task> list = taskService.selectTaskList(task);
-        return getDataTable(list);
+        List<TaskVo> taskVos = taskService.selectTaskVoList(task);
+        return getDataTable(taskVos);
     }
 
     /**
