@@ -3,8 +3,8 @@ package com.dkd.manage.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.dkd.manage.domain.dto.ChannelConfigDto;
 import com.dkd.manage.domain.vo.ChannelVo;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -107,13 +107,22 @@ public class ChannelController extends BaseController
 
     /**
      * 根据售货机软编码查询货道信息
-     * @param innerCode
-     * @return
      */
     @PreAuthorize("@ss.hasPermi('manage:channel:list')")
     @GetMapping("/list/{innerCode}")
     public AjaxResult listByInnerCode(@PathVariable String innerCode){
         List<ChannelVo> channelVoList = channelService.selectChannelVoByInnerCode(innerCode);
         return AjaxResult.success(channelVoList);
+    }
+
+    /**
+     * 批量设置货道信息
+     */
+    @PreAuthorize("@ss.hasPermi('manage:channel:edit')")
+    @Log(title = "售货机货道", businessType = BusinessType.UPDATE)
+    @PutMapping("/config")
+    public AjaxResult setChannel(@RequestBody ChannelConfigDto channelConfigDto){
+        int result = channelService.setChannel(channelConfigDto);
+        return toAjax(result);
     }
 }
