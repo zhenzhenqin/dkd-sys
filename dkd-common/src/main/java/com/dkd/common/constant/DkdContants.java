@@ -58,12 +58,12 @@ public class DkdContants {
     /**
      * 员工启用
      */
-    public static final Boolean EMP_STATUS_NORMAL = true;
+    public static final Long EMP_STATUS_NORMAL = 1L;
 
     /**
      * 员工禁用
      */
-    public static final Boolean EMP_STATUS_DISABLE = false;
+    public static final Long EMP_STATUS_DISABLE = 0L;
 
     /**
      * 角色编码：运营员

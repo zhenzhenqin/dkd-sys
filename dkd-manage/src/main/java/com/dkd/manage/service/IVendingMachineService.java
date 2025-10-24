@@ -2,6 +2,7 @@ package com.dkd.manage.service;
 
 import java.util.List;
 import com.dkd.manage.domain.VendingMachine;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * 设备管理Service接口
@@ -58,4 +59,12 @@ public interface IVendingMachineService
      * @return 结果
      */
     public int deleteVendingMachineById(Long id);
+
+    /**
+     * 根据售货机软编码查询售货机信息
+     *
+     * @param innerCode 售货机软编码
+     * @return 售货机信息
+     */
+    public VendingMachine getVendingMachineByInnerCode(String innerCode);
 }
