@@ -128,7 +128,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">user_id = #{userId},</if>
             <if test="userName != null">user_name = #{userName},</if>
             <if test="regionId != null">region_id = #{regionId},</if>
-            <if test="desc != null">desc = #{desc},</if>
+            <if test="desc != null">`desc` = #{desc},</if>
             <if test="productTypeId != null">product_type_id = #{productTypeId},</if>
             <if test="assignorId != null">assignor_id = #{assignorId},</if>
             <if test="addr != null">addr = #{addr},</if>
