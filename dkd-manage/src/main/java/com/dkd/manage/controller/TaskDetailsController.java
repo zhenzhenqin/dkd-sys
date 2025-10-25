@@ -63,10 +63,12 @@ public class TaskDetailsController extends BaseController
      * 获取工单详情详细信息
      */
     @PreAuthorize("@ss.hasPermi('manage:taskDetails:query')")
-    @GetMapping(value = "/{detailsId}")
-    public AjaxResult getInfo(@PathVariable("detailsId") Long detailsId)
+    @GetMapping("/byTaskId/{taskId}")
+    public AjaxResult getInfo(@PathVariable("taskId") Long taskId)
     {
-        return success(taskDetailsService.selectTaskDetailsByDetailsId(detailsId));
+        TaskDetails taskDetails = new TaskDetails();
+        taskDetails.setTaskId(taskId);
+        return success(taskDetailsService.selectTaskDetailsList(taskDetails));
     }
 
     /**
